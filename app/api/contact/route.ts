@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
+        pass: process.env.EMAIL_PASS,
       },
       tls: {
         ciphers: 'TLS_AES_128_GCM_SHA256',
@@ -55,8 +55,8 @@ export async function POST(request: Request) {
 
     // Email content with sanitized inputs
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
+      from: process.env.DEFAULT_FROM,
+      to: process.env.EMAIL_USER, // Send to the configured email user
       subject: `New Contact Form Submission from ${sanitizedName}`,
       text: `
         Name: ${sanitizedName}
@@ -74,9 +74,6 @@ export async function POST(request: Request) {
       `,
     };
 
-    // For demo purposes, we'll just return success without actually sending
-    // In production, uncomment the following code to send the email
-    /*
     try {
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent successfully:', info.messageId);
@@ -87,10 +84,6 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-    */
-
-    // For demo purposes, simulate a slight delay
-    await new Promise(resolve => setTimeout(resolve, 500));
 
     return NextResponse.json({ 
       success: true,
