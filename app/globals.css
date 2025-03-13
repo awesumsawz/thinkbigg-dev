@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 231 15% 18%;
+  --foreground: 60 30% 96%;
+
+  --card: 231 15% 23%;
+  --card-foreground: 60 30% 96%;
+
+  --popover: 231 15% 18%;
+  --popover-foreground: 60 30% 96%;
+
+  --primary: 170 100% 75%;
+  --primary-foreground: 231 15% 18%;
+
+  --secondary: 231 15% 28%;
+  --secondary-foreground: 60 30% 96%;
+
+  --muted: 231 15% 28%;
+  --muted-foreground: 60 30% 56%;
+
+  --accent: 291 70% 69%;
+  --accent-foreground: 60 30% 96%;
+
+  --destructive: 0 100% 67%;
+  --destructive-foreground: 60 30% 96%;
+
+  --border: 231 15% 28%;
+  --input: 231 15% 28%;
+  --ring: 291 70% 69%;
+
+  --radius: 0.5rem;
+}
+
+body {
+  color: rgb(var(--foreground));
+  background: #282a36; /* Dracula background color */
+}
+
+.pixelated-border {
+  box-shadow: 0 0 0 2px #6272a4, 0 0 0 4px #282a36, 0 0 0 6px #6272a4;
+}
+
+.font-pixel {
+  text-shadow: 2px 2px 0 #191a21;
+  letter-spacing: -1px;
+}
+
+.drop-shadow-icon {
+  filter: drop-shadow(2px 2px 0 #191a21);
+}
+
+/* Footer visibility control */
+body.is-home .non-home-footer {
+  display: none;
+}
+
+/* Homepage specific styles */
+body.is-home {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.home-footer {
+  margin-top: auto;
+}
+
+/* Mobile header adjustments */
+@media (max-width: 768px) {
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: theme('colors.dracula.background');
+  }
+  
+  /* Mobile menu height variable */
+  :root {
+    --mobile-menu-height: 73px; /* Exact height as requested */
+  }
+  
+  /* Padding for content to account for fixed mobile header */
+  .mobile-header-offset {
+    padding-top: var(--mobile-menu-height);
+  }
+  
+  /* Hide specific header elements on non-homepage mobile views */
+  .mobile-non-home-header > div > a > h1 {
+    font-size: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  .mobile-non-home-header > div > p {
+    display: none;
+  }
+  
+  .mobile-non-home-header > div > div.space-y-4 > nav {
+    display: none;
+  }
+  
+  /* Remove padding and border from header in mobile non-homepage views */
+  .mobile-non-home-header {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+  }
+  
+  /* Reduce padding-top for header content div in mobile non-homepage views */
+  .mobile-non-home-header > div {
+    padding-top: 30px !important;
+  }
+  
+  /* Ensure the mobile nav title "Think Bigg" remains visible */
+  .md\:hidden.fixed.top-0 .mobile-nav-title {
+    display: block !important;
+  }
+}
+
+/* Responsive title adjustments */
+@media (max-width: 640px) {
+  h1.font-pixel {
+    max-width: 100%;
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Ensure mobile nav title doesn't overflow */
+@media (max-width: 480px) {
+  .mobile-nav-title {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+

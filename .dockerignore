@@ -1,0 +1,14 @@
+.git
+.next
+node_modules
+npm-debug.log
+README.md
+.env
+.env.local
+.env*.local
+.dockerignore
+Dockerfile
+*.md
+.github
+.vscode 
+task-definition.json
