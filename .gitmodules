@@ -1,0 +1,3 @@
+[submodule "aws"]
+	path = aws
+	url = http://10.0.30.206/web/thinkbigg-nextjs-aws.git
