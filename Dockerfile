@@ -2,7 +2,7 @@
 ARG TARGETPLATFORM=linux/amd64
 
 # Build stage
-FROM --platform=$TARGETPLATFORM node:23.10.0-alpine AS builder
+FROM --platform=$TARGETPLATFORM node:23.11.1-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 # Install dependencies using npm
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM --platform=$TARGETPLATFORM node:23.10.0-alpine AS runner
+FROM --platform=$TARGETPLATFORM node:23.11.1-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
