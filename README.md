@@ -16,10 +16,12 @@ A modern, full-stack web application built with Next.js 15, React 19, and TypeSc
 
 Before you begin, ensure you have the following installed:
 - Node.js 20.x or later
-- Bun (recommended) or npm
+- Bun (package manager)
 - Docker (for containerized deployment)
 
-## Getting Started
+## Local Development
+
+### Initial Setup
 
 1. Clone the repository:
 ```bash
@@ -29,70 +31,185 @@ cd <project-directory>
 
 2. Install dependencies:
 ```bash
-# Using Bun (recommended)
 bun install
-
-# Using npm
-npm install
 ```
 
 3. Set up environment variables:
 ```bash
 cp .env.local.example .env.local
 ```
-Edit `.env.local` and update the following variables:
-- Configure your SMTP server details for the contact form
-- Add any other required environment variables
 
-4. Start the development server:
+Edit `.env.local` with your local development settings:
+```env
+# Email Server Configuration (for local testing)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=465
+EMAIL_SECURE=true
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-app-specific-password
+DEFAULT_FROM="Your App Name <noreply@yourapp.com>"
+
+# Test Endpoint Security (for local testing only)
+TEST_EMAIL_API_KEY=your-secure-api-key
+```
+
+### Running Locally
+
+1. Start the development server:
 ```bash
-# Using Bun
 bun dev
-
-# Using npm
-npm run dev
 ```
 
-The application will be available at `http://localhost:3000`.
+2. Open your browser to `http://localhost:3000`
 
-## Building for Production
+3. The app will automatically reload when you make changes to the code
 
-### Local Build
+### Local Testing
 
+Test the production build locally:
 ```bash
-# Using Bun
+# Build the application
 bun run build
+
+# Start the production server
 bun start
-
-# Using npm
-npm run build
-npm start
 ```
 
-### Docker Build
+### Development Workflow
 
-1. Build the Docker image:
+- **Hot Reload**: Changes to files are automatically reflected in the browser
+- **Type Checking**: Run `bun run lint` to check for TypeScript errors
+- **Clean Install**: Run `bun run reinstall` to clean and reinstall dependencies
+
+## Production Development
+
+### Environment Variables
+
+Production environment variables must be configured in your deployment platform. Required variables:
+
+```env
+# Email Server Configuration
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=465
+EMAIL_SECURE=true
+EMAIL_USER=your-production-email@example.com
+EMAIL_PASS=your-app-specific-password
+DEFAULT_FROM="Think Bigg Development <noreply@thinkbigg.com>"
+
+# Node Environment
+NODE_ENV=production
+```
+
+**Important**: Never include `TEST_EMAIL_API_KEY` in production environments. The test endpoint is automatically disabled in production.
+
+### Building for Production
+
+Create an optimized production build:
+
 ```bash
-docker build -t your-app-name .
+bun run build
 ```
 
-2. Run the container:
+This will:
+- Create optimized bundles
+- Generate static pages
+- Prepare the application for deployment
+
+### Testing Production Build Locally
+
 ```bash
-docker run -p 3000:3000 your-app-name
+# Build the application
+bun run build
+
+# Start the production server
+bun start
 ```
+
+Access at `http://localhost:3000` to verify the production build works correctly.
 
 ## Deployment
 
-### AWS ECS Deployment
+### Digital Ocean App Platform
 
-1. Push the image to Amazon ECR:
+The application is deployed on Digital Ocean App Platform, which provides automatic builds, scaling, and SSL certificates.
+
+#### Initial Setup
+
+1. **Connect Your Repository**:
+   - Log in to [Digital Ocean](https://cloud.digitalocean.com/)
+   - Navigate to Apps → Create App
+   - Connect your GitHub/GitLab repository
+   - Select the branch to deploy (typically `main`)
+
+2. **Configure Build Settings**:
+   - **Build Command**: `bun run build`
+   - **Run Command**: `bun start`
+   - **HTTP Port**: `3000`
+   - **Environment**: Select `Node.js`
+
+3. **Set Environment Variables**:
+   - In the App Platform dashboard, go to Settings → App-Level Environment Variables
+   - Add all required production environment variables (see above)
+   - Encrypt sensitive values like `EMAIL_PASS`
+
+4. **Configure Resources**:
+   - Choose your plan (Basic or Professional)
+   - Select your datacenter region
+   - Configure auto-scaling if needed
+
+#### Deployment Workflow
+
+Digital Ocean App Platform supports automatic deployments:
+
+1. **Automatic Deployment**:
+   - Push changes to your configured branch
+   - Digital Ocean automatically detects changes
+   - Build process starts automatically
+   - Application deploys on successful build
+
+2. **Manual Deployment**:
+   - Navigate to your app in the Digital Ocean dashboard
+   - Click "Actions" → "Force Rebuild and Deploy"
+   - Monitor build logs in real-time
+
+#### Monitoring and Logs
+
+- **View Logs**: Apps → Your App → Runtime Logs
+- **Build Logs**: Apps → Your App → Deployments → View Build Logs
+- **Metrics**: Apps → Your App → Insights (CPU, Memory, Bandwidth)
+
+#### Custom Domain
+
+1. Add your custom domain in App Platform settings
+2. Update DNS records as instructed by Digital Ocean
+3. SSL certificate is automatically provisioned and renewed
+
+### Docker Deployment (Alternative)
+
+If deploying to a custom infrastructure:
+
+1. **Build the Docker image**:
 ```bash
-aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.us-east-2.amazonaws.com
-docker tag thinkbigg-nextjs:latest <your-account-id>.dkr.ecr.us-east-2.amazonaws.com/thinkbigg-nextjs:latest
-docker push <your-account-id>.dkr.ecr.us-east-2.amazonaws.com/thinkbigg-nextjs:latest
+docker build -t thinkbigg-nextjs .
 ```
 
-2. Create an ECS task definition and service using the AWS Console or CLI.
+2. **Run the container**:
+```bash
+docker run -p 3000:3000 \
+  -e EMAIL_HOST=smtp.gmail.com \
+  -e EMAIL_PORT=465 \
+  -e EMAIL_SECURE=true \
+  -e EMAIL_USER=your-email@example.com \
+  -e EMAIL_PASS=your-password \
+  -e DEFAULT_FROM="Your App <noreply@yourapp.com>" \
+  thinkbigg-nextjs
+```
+
+3. **Push to a registry** (if needed):
+```bash
+docker tag thinkbigg-nextjs:latest your-registry/thinkbigg-nextjs:latest
+docker push your-registry/thinkbigg-nextjs:latest
+```
 
 ## Contact Form Setup
 
