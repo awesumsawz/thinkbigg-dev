@@ -2,16 +2,23 @@
 ARG TARGETPLATFORM=linux/amd64
 
 # Build stage
-FROM --platform=$TARGETPLATFORM node:23.11.1-alpine AS builder
+FROM --platform=$TARGETPLATFORM oven/bun:1.3.2-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-# Install dependencies using npm
-RUN npm ci
+
+# Copy package files
+COPY package.json bun.lockb ./
+
+# Install dependencies using bun
+RUN bun install --frozen-lockfile
+
+# Copy source code
 COPY . .
-RUN npm run build
+
+# Build the application
+RUN bun run build
 
 # Production stage
-FROM --platform=$TARGETPLATFORM node:23.11.1-alpine AS runner
+FROM --platform=$TARGETPLATFORM oven/bun:1.3.2-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
