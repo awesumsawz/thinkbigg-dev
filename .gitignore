@@ -29,3 +29,4 @@ next-env.d.ts
 .prettierrc
 aws/*
 CLAUDE.md
+.claude/
