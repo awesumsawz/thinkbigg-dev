@@ -17,7 +17,6 @@ A modern, full-stack web application built with Next.js 15, React 19, and TypeSc
 Before you begin, ensure you have the following installed:
 - Node.js 20.x or later
 - Bun (package manager)
-- Docker (for containerized deployment)
 
 ## Local Development
 
@@ -131,7 +130,7 @@ Access at `http://localhost:3000` to verify the production build works correctly
 
 ### Digital Ocean App Platform
 
-The application is deployed on Digital Ocean App Platform, which provides automatic builds, scaling, and SSL certificates.
+The application is deployed on Digital Ocean App Platform, which provides automatic builds, scaling, SSL certificates, and native bun support.
 
 #### Initial Setup
 
@@ -142,10 +141,12 @@ The application is deployed on Digital Ocean App Platform, which provides automa
    - Select the branch to deploy (typically `main`)
 
 2. **Configure Build Settings**:
-   - **Build Command**: `bun run build`
-   - **Run Command**: `bun start`
+   - **Build Command**: Leave empty for auto-detection, or use `bun install && bun run build`
+   - **Run Command**: `bun run start`
    - **HTTP Port**: `3000`
-   - **Environment**: Select `Node.js`
+   - **Environment**: Will auto-detect as `Node.js` with bun
+
+   > **Note**: Digital Ocean supports bun natively through buildpacks and will auto-detect it from `bun.lockb`.
 
 3. **Set Environment Variables**:
    - In the App Platform dashboard, go to Settings → App-Level Environment Variables
@@ -184,31 +185,63 @@ Digital Ocean App Platform supports automatic deployments:
 2. Update DNS records as instructed by Digital Ocean
 3. SSL certificate is automatically provisioned and renewed
 
-### Docker Deployment (Alternative)
+## Troubleshooting
 
-If deploying to a custom infrastructure:
+### Digital Ocean Deployment Issues
 
-1. **Build the Docker image**:
-```bash
-docker build -t thinkbigg-nextjs .
+#### "error finding executable 'bun' in PATH"
+
+If you see this error during deployment:
+```
+starting container: starting sub-container [bun start]: error finding executable "bun" in PATH
 ```
 
-2. **Run the container**:
+**Root Cause**: Digital Ocean couldn't auto-detect bun or the run command is incorrect.
+
+**Solution**:
+1. Go to your app → Settings → Components → your-app
+2. Verify commands:
+   - **Build Command**: Leave empty for auto-detection, or `bun install && bun run build`
+   - **Run Command**: `bun run start`
+3. Ensure `bun.lockb` is committed to your repository (this is how DO detects bun)
+4. Save and redeploy
+
+#### Build Succeeds but App Won't Start
+
+**Check these settings**:
+1. Verify the run command is set to `bun run start`
+2. Ensure HTTP port is set to `3000`
+3. Check that all required environment variables are set
+4. Review runtime logs: Apps → Your App → Runtime Logs
+
+#### Environment Variables Not Working
+
+**Solutions**:
+- Ensure variables are set at the App-Level (not component-level)
+- Encrypt sensitive values like `EMAIL_PASS`
+- Redeploy after adding/changing environment variables
+- Don't include `TEST_EMAIL_API_KEY` in production
+
+### Local Development Issues
+
+#### Bun Installation Failed
+
+If `bun install` fails, ensure you have bun installed:
 ```bash
-docker run -p 3000:3000 \
-  -e EMAIL_HOST=smtp.gmail.com \
-  -e EMAIL_PORT=465 \
-  -e EMAIL_SECURE=true \
-  -e EMAIL_USER=your-email@example.com \
-  -e EMAIL_PASS=your-password \
-  -e DEFAULT_FROM="Your App <noreply@yourapp.com>" \
-  thinkbigg-nextjs
+# macOS/Linux
+curl -fsSL https://bun.sh/install | bash
+
+# Or via npm
+npm install -g bun
 ```
 
-3. **Push to a registry** (if needed):
+#### Build Errors
+
+Clear cache and rebuild:
 ```bash
-docker tag thinkbigg-nextjs:latest your-registry/thinkbigg-nextjs:latest
-docker push your-registry/thinkbigg-nextjs:latest
+bun run clean
+bun install
+bun run build
 ```
 
 ## Contact Form Setup
