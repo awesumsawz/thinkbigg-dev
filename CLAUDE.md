@@ -109,19 +109,18 @@ TEST_EMAIL_API_KEY=your-secure-api-key  # For development test endpoint
 ## Deployment
 
 ### Digital Ocean App Platform
-The application is deployed on Digital Ocean App Platform with automatic builds and deployments.
+The application is deployed on Digital Ocean App Platform with automatic builds, deployments, and native bun support.
 
-**Build Command**: `bun run build`
-**Run Command**: `bun start`
+**Build Command**: Leave empty for auto-detection, or `bun install && bun run build`
+**Run Command**: `bun run start`
 **Port**: `3000`
 
-See README.md for complete deployment instructions and configuration.
+**How it works**:
+- Digital Ocean auto-detects bun from `bun.lockb` file
+- Uses buildpacks to install and run with native bun runtime
+- Automatic deployments on git push to main branch
 
-### Docker (Alternative)
-- **Build**: `docker build -t thinkbigg-nextjs .`
-- **Run**: `docker run -p 3000:3000 thinkbigg-nextjs`
-- **Platform**: Configured for `linux/amd64` (can be overridden with `--platform`)
-- **Output**: Standalone mode enabled in `next.config.mjs`
+See README.md for complete deployment instructions and configuration.
 
 ## Known Issues & TODOs
 
